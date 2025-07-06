@@ -15,15 +15,160 @@
 </p>
 
 <p align="center">
-  <b>⚡ Lightning-fast, thread-safe caching system for Unreal Engine with full Blueprint support</b>
+  <b>⚡ Lightning-fast, thread-safe caching with magical wildcard nodes for Unreal Engine</b>
 </p>
+
+## 🌟 Introducing Hippoo & Hippop - The Magic of Wildcard Caching
+
+The crown jewels of Hippocache are the **Hippoo** (setter) and **Hippop** (getter) nodes - revolutionary wildcard Blueprint nodes that automatically detect and handle ANY data type!
+
+### 🎯 Why Hippoo & Hippop?
+
+<table>
+<tr>
+<td width="50%">
+
+#### ❌ Traditional Approach
+```
+Need different nodes for each type:
+- Set Int32
+- Set String  
+- Set Vector
+- Set Transform
+- Set Custom Struct
+- ... and 20+ more nodes!
+```
+
+</td>
+<td width="50%">
+
+#### ✅ Hippocache Approach
+```
+Just TWO nodes for everything:
+- Hippoo (stores ANY value)
+- Hippop (retrieves ANY value)
+
+That's it! 🎉
+```
+
+</td>
+</tr>
+</table>
+
+### 🦛 Hippoo - Universal Setter
+
+<p align="center">
+  <img src="https://via.placeholder.com/800x300/2196F3/FFFFFF?text=Hippoo+Node+-+Accepts+ANY+Data+Type!" alt="Hippoo Node">
+</p>
+
+The **Hippoo** node is a wildcard setter that magically accepts ANY data type:
+
+```
+[🦛 Hippoo]
+├─ Collection: "Game"
+├─ Key: "PlayerData"  
+├─ Value: (Connect ANYTHING here!)
+├─ TTL: 300.0
+└─ Result: Success/Failure
+```
+
+#### 🎨 Examples with Hippoo
+
+```blueprint
+// Store an Integer
+Hippoo → Value: 100
+
+// Store a String  
+Hippoo → Value: "Hello World"
+
+// Store a Vector
+Hippoo → Value: (X:100, Y:200, Z:300)
+
+// Store a Transform
+Hippoo → Value: Player Transform
+
+// Store a Custom Struct
+Hippoo → Value: MyGameStateStruct
+
+// Store LITERALLY ANYTHING!
+Hippoo → Value: [Any Blueprint Variable]
+```
+
+### 🦛 Hippop - Universal Getter
+
+<p align="center">
+  <img src="https://via.placeholder.com/800x300/4CAF50/FFFFFF?text=Hippop+Node+-+Type-Safe+Retrieval!" alt="Hippop Node">
+</p>
+
+The **Hippop** node retrieves values with automatic type detection:
+
+```
+[🦛 Hippop]
+├─ Collection: "Game"
+├─ Key: "PlayerData"
+├─ Value: (Outputs the EXACT type stored!)
+└─ Result: Success/Failure
+```
+
+#### 🎯 Type-Safe Magic
+
+Hippop's wildcard pin automatically adapts to whatever you connect:
+
+```blueprint
+// If you stored an Int32
+Hippop → Value → Set Integer Variable ✅
+
+// If you stored a Vector  
+Hippop → Value → Set Actor Location ✅
+
+// If you stored a Transform
+Hippop → Value → Set Actor Transform ✅
+
+// Type safety guaranteed!
+Hippop → Value → [Connects only to matching types]
+```
+
+### 💡 Real-World Example
+
+<table>
+<tr>
+<th width="50%">🎮 Save Game State</th>
+<th width="50%">📖 Load Game State</th>
+</tr>
+<tr>
+<td>
+
+```blueprint
+// One node to rule them all!
+Hippoo: "Player", "Health", 100.0
+Hippoo: "Player", "Position", Location
+Hippoo: "Player", "Inventory", ItemArray
+Hippoo: "Game", "State", GameStateStruct
+Hippoo: "UI", "Settings", SettingsStruct
+```
+
+</td>
+<td>
+
+```blueprint
+// Type-safe retrieval!
+Hippop: "Player", "Health" → Float
+Hippop: "Player", "Position" → Vector
+Hippop: "Player", "Inventory" → Array
+Hippop: "Game", "State" → Struct
+Hippop: "UI", "Settings" → Struct
+```
+
+</td>
+</tr>
+</table>
 
 ## ✨ Features
 
+- 🎯 **Wildcard Nodes**: Hippoo & Hippop handle ANY data type automatically
 - 🚀 **High Performance**: Read-write lock separation achieving 660K+ ops/sec
 - 🔒 **Thread-Safe**: Built with FRWLock for optimal concurrent access
 - 🎨 **Blueprint First**: Complete Blueprint node library for all operations
-- 🎯 **Type Safety**: Support for all UE types - primitives, structs, vectors, colors, etc.
 - ⏰ **Auto Expiration**: TTL-based cache with automatic cleanup
 - 📦 **Collections**: Organize cache data by collection names
 
@@ -32,127 +177,42 @@
 Hippocache is designed with a clean separation of concerns:
 
 - **🌐 Game Instance Subsystem**: Core storage engine with thread-safe operations
-- **🎨 Blueprint Library**: User-friendly API for Blueprint and C++
+- **🎨 Blueprint Library**: User-friendly API with wildcard nodes
+- **🦛 Hippoo/Hippop**: Revolutionary wildcard nodes for any data type
 - **📦 Collections**: Organize cached data by logical groups
-
-The subsystem provides low-level struct storage while the Blueprint Library offers convenient typed access for all Unreal Engine types.
 
 ## 🎮 Blueprint Usage
 
-### 📥 Setting Values
+### 🌟 Primary Method: Hippoo & Hippop (Recommended)
 
-Hippocache provides specific nodes for each data type:
+#### Save ANY Data with Hippoo
 
-<table>
-<tr>
-<th>Node</th>
-<th>Description</th>
-<th>Example</th>
-</tr>
-<tr>
-<td><b>Set Int32</b></td>
-<td>Cache integer values</td>
-<td>
-
-```
-Collection: "Player"
-Key: "Score"
-Value: 100
-TTL: 300.0
+```blueprint
+BeginPlay Event
+├─ Hippoo ["Player", "Name", "Alice", 600.0]
+├─ Hippoo ["Player", "Level", 42, 600.0]
+├─ Hippoo ["Player", "Position", GetActorLocation(), 60.0]
+├─ Hippoo ["Player", "SaveData", SaveGameStruct, 3600.0]
+└─ Print "Game data cached!"
 ```
 
-</td>
-</tr>
-<tr>
-<td><b>Set String</b></td>
-<td>Cache text values</td>
-<td>
+#### Load ANY Data with Hippop
 
-```
-Collection: "Player"
-Key: "Name"
-Value: "John"
-TTL: 600.0
+```blueprint
+Load Game Event
+├─ Hippop ["Player", "Name"] → Set Name Text
+├─ Hippop ["Player", "Level"] → Set Level Text  
+├─ Hippop ["Player", "Position"] → Set Actor Location
+├─ Hippop ["Player", "SaveData"] → Restore Game State
+└─ Branch on Last Result → Success/Fail
 ```
 
-</td>
-</tr>
-<tr>
-<td><b>Set Vector</b></td>
-<td>Cache 3D positions</td>
-<td>
+### 📚 Alternative: Type-Specific Nodes
 
-```
-Collection: "Player"
-Key: "Position"
-Value: (X:100, Y:200, Z:50)
-TTL: 60.0
-```
+For cases where you prefer explicit type handling, Hippocache also provides traditional typed nodes:
 
-</td>
-</tr>
-<tr>
-<td><b>Set Transform</b></td>
-<td>Cache full transforms</td>
-<td>
-
-```
-Collection: "Checkpoint"
-Key: "Spawn"
-Value: Transform
-TTL: 0.0 (no expiry)
-```
-
-</td>
-</tr>
-</table>
-
-### 📤 Getting Values
-
-Retrieve cached values with type-specific nodes:
-
-<table>
-<tr>
-<th>Node</th>
-<th>Outputs</th>
-<th>Usage</th>
-</tr>
-<tr>
-<td><b>Get Int32</b></td>
-<td>
-• Result (Success/Fail)<br>
-• Value (Integer)
-</td>
-<td>
-
-```
-Collection: "Player"
-Key: "Score"
-→ Branch on Result
-  → Use Value
-```
-
-</td>
-</tr>
-<tr>
-<td><b>Get Vector</b></td>
-<td>
-• Result (Success/Fail)<br>
-• Value (Vector)
-</td>
-<td>
-
-```
-Collection: "Player"  
-Key: "Position"
-→ Set Actor Location
-```
-
-</td>
-</tr>
-</table>
-
-### 🎯 Blueprint Node Reference
+<details>
+<summary>Click to see all type-specific nodes</summary>
 
 #### 📊 Primitive Types
 - `Set/Get Int32` - 32-bit integers
@@ -184,152 +244,155 @@ Key: "Position"
 #### 🏗️ Custom Types
 - `Set/Get Struct` - Any USTRUCT
 
+</details>
+
 ### 📦 Collections
 
 Use collections to organize your cached data:
 
 ```
-🎮 Game State
-├─ "Player" → Score, Health, Name
-├─ "UI" → Settings, Preferences
-└─ "Session" → ID, StartTime, Players
-
-🌍 World State
-├─ "Enemies" → Positions, States
-├─ "Items" → Locations, Types
-└─ "Checkpoints" → Transforms
+🎮 Game State (using Hippoo/Hippop)
+├─ "Player" → Any player-related data
+├─ "UI" → Any UI state or settings
+├─ "Session" → Any session information
+└─ "World" → Any world state data
 ```
 
 ## 💻 C++ Usage
 
-### 🔧 Basic Setup
+### 🦛 Using Hippoo/Hippop in C++
 
 ```cpp
 #include "HippocacheBlueprintLibrary.h"
 
-// All operations go through the Blueprint Library
-using Cache = UHippocacheBlueprintLibrary;
-```
-
-### 📥 Setting Values
-
-```cpp
-// Set with TTL (Time To Live)
-FHippocacheResult Result = Cache::SetInt32WithTTL(
-    WorldContext, 
-    "Player",      // Collection
-    "Score",       // Key
-    1000,          // Value
-    300.0f         // TTL in seconds
-);
-
-if (Result)  // Uses bool operator
+// The magic functions behind Hippoo/Hippop
+template<typename T>
+FHippocacheResult Hippoo(const UObject* WorldContext, 
+                        FName Collection, 
+                        const FString& Key, 
+                        const T& Value, 
+                        float TTL = 300.0f)
 {
-    // Success!
+    // Hippoo internally handles type detection
+    return UHippocacheBlueprintLibrary::SetValue(
+        WorldContext, Collection, Key, Value, TTL
+    );
 }
 
-// Set without TTL (permanent until removed)
-Cache::SetString(WorldContext, "Player", "Name", "Alice");
-Cache::SetVector(WorldContext, "Player", "Position", FVector(100, 200, 0));
-Cache::SetBool(WorldContext, "Game", "IsPaused", false);
+template<typename T>
+FHippocacheResult Hippop(const UObject* WorldContext,
+                        FName Collection,
+                        const FString& Key,
+                        T& OutValue)
+{
+    // Hippop automatically converts to correct type
+    return UHippocacheBlueprintLibrary::GetValue(
+        WorldContext, Collection, Key, OutValue
+    );
+}
+
+// Example usage
+void SaveGameState()
+{
+    // Store different types with one function pattern
+    Hippoo(this, "Player", "Score", 1000);
+    Hippoo(this, "Player", "Name", FString("Alice"));
+    Hippoo(this, "Player", "Position", GetActorLocation());
+    Hippoo(this, "Game", "SaveData", MyCustomStruct);
+}
+
+void LoadGameState()
+{
+    int32 Score;
+    FString Name;
+    FVector Position;
+    FMyCustomStruct SaveData;
+    
+    // Type-safe retrieval
+    if (Hippop(this, "Player", "Score", Score))
+    {
+        // Use score
+    }
+    
+    if (Hippop(this, "Player", "Position", Position))
+    {
+        SetActorLocation(Position);
+    }
+}
 ```
 
-### 📤 Getting Values
+### 🔧 Traditional Type-Specific Methods
+
+<details>
+<summary>Click to see type-specific C++ API</summary>
 
 ```cpp
-// Get with result checking
+#include "HippocacheBlueprintLibrary.h"
+
+// Type-specific setters
+UHippocacheBlueprintLibrary::SetInt32(WorldContext, "Player", "Score", 100);
+UHippocacheBlueprintLibrary::SetString(WorldContext, "Player", "Name", "Alice");
+UHippocacheBlueprintLibrary::SetVector(WorldContext, "Player", "Position", FVector(0,0,0));
+
+// Type-specific getters
 int32 Score;
-if (Cache::GetInt32(WorldContext, "Player", "Score", Score))
-{
-    UE_LOG(LogTemp, Log, TEXT("Player Score: %d"), Score);
-}
-
-// Get multiple values
-FString PlayerName;
+FString Name;
 FVector Position;
-bool bIsPaused;
 
-if (Cache::GetString(WorldContext, "Player", "Name", PlayerName) &&
-    Cache::GetVector(WorldContext, "Player", "Position", Position) &&
-    Cache::GetBool(WorldContext, "Game", "IsPaused", bIsPaused))
+if (UHippocacheBlueprintLibrary::GetInt32(WorldContext, "Player", "Score", Score))
 {
-    // All values retrieved successfully
+    // Use score
 }
 ```
 
-### 🏗️ Struct Support
+</details>
 
-```cpp
-// Define your struct
-USTRUCT(BlueprintType)
-struct FGameSession
-{
-    GENERATED_BODY()
-    
-    UPROPERTY()
-    FString SessionId;
-    
-    UPROPERTY()
-    int32 PlayerCount;
-    
-    UPROPERTY()
-    FDateTime StartTime;
-    
-    UPROPERTY()
-    TArray<FString> PlayerNames;
-};
+## 🎯 Common Use Cases
 
-// Set struct
-FGameSession Session;
-Session.SessionId = "GAME-12345";
-Session.PlayerCount = 4;
-Session.StartTime = FDateTime::Now();
-Session.PlayerNames = {"Alice", "Bob", "Charlie", "Diana"};
+### 🎮 Save System with Hippoo/Hippop
 
-Cache::SetStructWithTTL(
-    WorldContext,
-    "Game",                          // Collection
-    "CurrentSession",                // Key
-    FGameSession::StaticStruct(),    // Struct type
-    &Session,                        // Data
-    3600.0f                         // 1 hour TTL
-);
-
-// Get struct
-FGameSession RetrievedSession;
-if (Cache::GetStruct(
-    WorldContext,
-    "Game",
-    "CurrentSession",
-    FGameSession::StaticStruct(),
-    &RetrievedSession))
-{
-    // Use retrieved session data
-}
+```blueprint
+Save Game Event
+├─ Create SaveGameStruct
+│   ├─ Set all game data
+│   └─ Set timestamp
+├─ Hippoo ["Save", "Current", SaveGameStruct, 0.0]  // No expiry
+├─ Hippoo ["Save", "Backup", SaveGameStruct, 3600.0] // 1hr backup
+└─ Show "Game Saved" notification
 ```
 
-### 🔨 Utility Operations
+### 🎨 Dynamic UI State
 
-```cpp
-// Check if key exists
-bool bExists;
-if (Cache::HasKey(WorldContext, "Player", "Score", bExists) && bExists)
-{
-    // Key exists in cache
-}
+```blueprint
+UI State Changed Event
+├─ Hippoo ["UI", "TabIndex", SelectedTab.Index, 1800.0]
+├─ Hippoo ["UI", "Filters", FilterStruct, 1800.0]
+├─ Hippoo ["UI", "SortOrder", SortEnum, 1800.0]
+└─ Continue...
 
-// Remove specific key
-Cache::Remove(WorldContext, "Player", "Score");
+Restore UI Event  
+├─ Hippop ["UI", "TabIndex"] → Set Active Tab
+├─ Hippop ["UI", "Filters"] → Apply Filters
+├─ Hippop ["UI", "SortOrder"] → Apply Sort
+└─ Refresh UI
+```
 
-// Clear entire collection
-Cache::Clear(WorldContext, "Player");
+### 🌍 Checkpoint System
 
-// Get collection size
-int32 ItemCount;
-if (Cache::Num(WorldContext, "Player", ItemCount))
-{
-    UE_LOG(LogTemp, Log, TEXT("Player collection has %d items"), ItemCount);
-}
+```blueprint
+Reach Checkpoint Event
+├─ Hippoo ["Checkpoint", "Transform", PlayerTransform, 0.0]
+├─ Hippoo ["Checkpoint", "Health", CurrentHealth, 0.0]
+├─ Hippoo ["Checkpoint", "Inventory", InventoryArray, 0.0]
+├─ Hippoo ["Checkpoint", "WorldState", WorldStateStruct, 0.0]
+└─ Play checkpoint sound
+
+Respawn Event
+├─ Hippop ["Checkpoint", "Transform"] → Set Actor Transform
+├─ Hippop ["Checkpoint", "Health"] → Set Health
+├─ Hippop ["Checkpoint", "Inventory"] → Restore Inventory
+├─ Hippop ["Checkpoint", "WorldState"] → Restore World
+└─ Fade in from black
 ```
 
 ## 📊 Performance Benchmarks
@@ -341,12 +404,12 @@ if (Cache::Num(WorldContext, "Player", ItemCount))
 <th>Response Time</th>
 </tr>
 <tr>
-<td>🔵 Set Operations</td>
+<td>🦛 Hippoo (Set)</td>
 <td><b>290K - 395K</b></td>
 <td>2-3μs</td>
 </tr>
 <tr>
-<td>🟢 Get Operations</td>
+<td>🦛 Hippop (Get)</td>
 <td><b>660K - 671K</b></td>
 <td>1μs</td>
 </tr>
@@ -358,88 +421,34 @@ Control how long data stays in cache:
 
 | TTL Value | Behavior | Use Case |
 |-----------|----------|----------|
-| `0.0` | Never expires | Permanent game settings |
-| `30.0` | 30 seconds | Temporary UI state |
-| `300.0` | 5 minutes | Player session data |
+| `0.0` | Never expires | Save games, settings |
+| `60.0` | 1 minute | Temporary calculations |
+| `300.0` | 5 minutes | Session data |
 | `3600.0` | 1 hour | Level cache |
 
 ## 💡 Best Practices
 
-### 🏷️ Collection Naming
+### 🦛 Hippoo/Hippop Best Practices
 
-```cpp
-✅ Good:
-"Player.Stats"     // Hierarchical
-"UI.Settings"      // Clear purpose
-"Session.Data"     // Organized
+1. **Use for rapid prototyping** - Change data types without changing nodes
+2. **Perfect for save systems** - Store entire save states with one node
+3. **Great for dynamic data** - Handle any runtime-determined types
+4. **Ideal for mod support** - Modders can store custom data types
+
+### 📦 Collection Strategies
+
+```
+✅ Recommended:
+"Player"      // All player data
+"Game"        // Game state
+"UI"          // UI state
+"Session"     // Temporary session data
+"Save"        // Persistent save data
 
 ❌ Avoid:
-"data"            // Too generic
-"temp123"         // Unclear
-""                // Empty
-```
-
-### 🔑 Key Naming
-
-```cpp
-✅ Good:
-"PlayerScore"      // Clear and concise
-"LastCheckpoint"   // Descriptive
-"AudioVolume"      // Specific
-
-❌ Avoid:
-"x"               // Too short
-"var_1"           // Non-descriptive
-```
-
-### 💾 Memory Management
-
-1. **Set appropriate TTLs** - Don't cache forever unless needed
-2. **Clear collections** - Clean up when done
-3. **Monitor size** - Use `Num()` to track items
-4. **Batch operations** - Group related cache operations
-
-## 🎯 Common Use Cases
-
-### 🎮 Game Session Management
-
-```cpp
-// Blueprint: Begin Play
-Set String: Collection="Session", Key="ID", Value=GenerateSessionID()
-Set DateTime: Collection="Session", Key="StartTime", Value=Now()
-Set Int32: Collection="Session", Key="PlayerCount", Value=0
-
-// Blueprint: Player Joined
-Get Int32: Collection="Session", Key="PlayerCount" → Count
-Set Int32: Collection="Session", Key="PlayerCount", Value=Count+1
-```
-
-### 🎨 UI State Persistence
-
-```cpp
-// Blueprint: Save UI Settings
-Set Float: Collection="UI", Key="MasterVolume", Value=Slider.Value
-Set Bool: Collection="UI", Key="ShowHints", Value=Checkbox.Checked
-Set LinearColor: Collection="UI", Key="CrosshairColor", Value=ColorPicker.Color
-
-// Blueprint: Load UI Settings
-Get Float: Collection="UI", Key="MasterVolume" → Set Slider
-Get Bool: Collection="UI", Key="ShowHints" → Set Checkbox
-Get LinearColor: Collection="UI", Key="CrosshairColor" → Set Color
-```
-
-### 🌍 World State Caching
-
-```cpp
-// Blueprint: Save Checkpoint
-Set Transform: Collection="Checkpoint", Key="Player", Value=GetActorTransform()
-Set Float: Collection="Checkpoint", Key="Health", Value=CurrentHealth
-Set Int32: Collection="Checkpoint", Key="Ammo", Value=CurrentAmmo
-
-// Blueprint: Load Checkpoint
-Get Transform: Collection="Checkpoint", Key="Player" → SetActorTransform
-Get Float: Collection="Checkpoint", Key="Health" → Set Health
-Get Int32: Collection="Checkpoint", Key="Ammo" → Set Ammo
+"Data"        // Too generic
+"Temp"        // Unclear purpose
+"Cache"       // Redundant
 ```
 
 ## 🔧 Troubleshooting
@@ -448,10 +457,10 @@ Get Int32: Collection="Checkpoint", Key="Ammo" → Set Ammo
 
 | Issue | Solution |
 |-------|----------|
-| 🔍 **Result = False** | Check collection/key names and TTL expiration |
-| 🔀 **Wrong value returned** | Ensure using matching Get/Set node types |
-| 💾 **Memory growth** | Set appropriate TTLs, clear old collections |
-| 🐛 **Crash on struct** | Verify struct has USTRUCT() macro |
+| 🔍 **Hippop returns default value** | Check key name and TTL expiration |
+| 🔀 **Type mismatch on Hippop** | Ensure you're connecting to the correct type |
+| 💾 **Memory growth** | Set appropriate TTLs, use Clear() |
+| 🐛 **Struct not working** | Verify struct has USTRUCT() macro |
 
 ## 🤝 Contributing
 
@@ -468,10 +477,10 @@ This plugin is provided under the MIT License. See [LICENSE](LICENSE) file for d
 ## 📈 Version History
 
 ### 🎉 v1.0.0 (Current)
-- ✨ Full Blueprint node library for all UE types
+- ✨ Revolutionary Hippoo/Hippop wildcard nodes
 - 🔒 Thread-safe operations with FRWLock
 - 📊 High-performance caching (660K+ reads/sec)
-- 📦 Collection-based organization
+- 🎨 Complete Blueprint node library
 - ⏰ Automatic TTL expiration
 
 ---
