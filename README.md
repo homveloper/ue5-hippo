@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <b>⚡ Lightning-fast, thread-safe caching with magical wildcard nodes for Unreal Engine</b>
+  <b>⚡ Lightning-fast, thread-safe <em>key-value cache storage</em> with magical wildcard nodes for Unreal Engine</b>
 </p>
 
 ## 🌟 Introducing Hippoo & Hippop - Universal Cache Nodes
@@ -102,6 +102,7 @@ The **Hippop** node retrieves values with automatic type detection:
 
 ## ✨ Features
 
+- 🗝️ **Key-Value Cache Storage**: Efficient key-value based data caching system
 - 🎯 **Universal Nodes**: Just Hippoo & Hippop for ANY data type
 - 🚀 **Blazing Fast**: 660K+ ops/sec with read-write lock separation
 - 🔒 **Thread-Safe**: Built with FRWLock for concurrent access
