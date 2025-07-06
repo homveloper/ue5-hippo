@@ -15,293 +15,254 @@
 </p>
 
 <p align="center">
-  <b>⚡ Lightning-fast, thread-safe caching system for Unreal Engine with Blueprint support</b>
+  <b>⚡ Lightning-fast, thread-safe caching system for Unreal Engine with full Blueprint support</b>
 </p>
 
 ## ✨ Features
 
-- 🚀 **High Performance**: Optimized read-write lock separation achieving 660K+ ops/sec
-- 🔒 **Thread-Safe**: Built with FRWLock for concurrent read access
-- 🎨 **Blueprint Support**: Full integration with wildcard nodes (Hippoo/Hippop)
-- 📦 **Type Safety**: Support for all UE primitive types and USTRUCT
-- ⏰ **Auto Expiration**: TTL-based cache expiration with configurable timeouts
-- 🧹 **Memory Efficient**: Automatic cleanup of expired entries
-
-## 📊 Performance Benchmarks
-
-<table align="center">
-<tr>
-<th>Operation</th>
-<th>Ops/Second</th>
-<th>Min Time</th>
-<th>Avg Time</th>
-</tr>
-<tr>
-<td>🔵 Set Int32</td>
-<td><b>395,256</b></td>
-<td>2μs</td>
-<td>2μs</td>
-</tr>
-<tr>
-<td>🟢 Set String</td>
-<td><b>298,507</b></td>
-<td>3μs</td>
-<td>3μs</td>
-</tr>
-<tr>
-<td>🟣 Set Struct</td>
-<td><b>290,697</b></td>
-<td>3μs</td>
-<td>3μs</td>
-</tr>
-<tr>
-<td>🔴 Get Int32</td>
-<td><b>661,812</b></td>
-<td>1μs</td>
-<td>1μs</td>
-</tr>
-<tr>
-<td>🟡 Get String</td>
-<td><b>661,812</b></td>
-<td>1μs</td>
-<td>1μs</td>
-</tr>
-<tr>
-<td>🟠 Get Struct</td>
-<td><b>671,140</b></td>
-<td>1μs</td>
-<td>1μs</td>
-</tr>
-</table>
-
-## 🛠️ Installation
-
-1. 📁 Copy the `hippocache` folder to your project's `Plugins` directory
-2. 🔄 Regenerate project files
-3. ✅ Enable the plugin in your project settings or .uproject file
-
-```json
-{
-    "Plugins": [
-        {
-            "Name": "hippocache",
-            "Enabled": true
-        }
-    ]
-}
-```
-
-## 🎮 Usage
-
-### 🎨 Blueprint Usage
-
-#### 📥 Setting Values (Hippoo Node)
-
-<img src="https://via.placeholder.com/600x200/2196F3/FFFFFF?text=Hippoo+Node+Example" alt="Hippoo Node">
-
-The **Hippoo** node allows you to cache any type of value with automatic type detection:
-
-```
-[🦛 Hippoo]
-├─ Key: "PlayerScore"
-├─ Value: 100
-├─ TTL: 300.0 (5 minutes)
-└─ Result: ✅ Success/❌ Failure
-```
-
-#### 📤 Getting Values (Hippop Node)
-
-<img src="https://via.placeholder.com/600x200/4CAF50/FFFFFF?text=Hippop+Node+Example" alt="Hippop Node">
-
-The **Hippop** node retrieves cached values with type safety:
-
-```
-[🦛 Hippop]
-├─ Key: "PlayerScore"
-├─ Value: 📊 (Retrieved value)
-└─ Result: ✅ Success/❌ Failure
-```
-
-### 💻 C++ Usage
-
-#### 🔧 Basic Operations
-
-```cpp
-// 🎯 Get the subsystem
-UHippocacheSubsystem* Cache = GetGameInstance()->GetSubsystem<UHippocacheSubsystem>();
-
-// 💾 Set values
-bool bSuccess = Cache->SetInt32("Score", 100, 300.0f); // 5 minute TTL
-Cache->SetString("PlayerName", "John", 600.0f);
-Cache->SetBool("IsActive", true, 60.0f);
-
-// 📖 Get values
-int32 Score;
-if (Cache->GetInt32("Score", Score))
-{
-    // Use the score 🎮
-}
-
-// ❓ Check existence
-if (Cache->HasKey("PlayerName"))
-{
-    // Key exists ✅
-}
-
-// 🗑️ Remove specific key
-Cache->Remove("Score");
-
-// 🧹 Clear all cache
-Cache->Clear();
-```
-
-#### 📦 Struct Support
-
-```cpp
-// 🏗️ Define your struct
-USTRUCT(BlueprintType)
-struct FPlayerData
-{
-    GENERATED_BODY()
-    
-    UPROPERTY()
-    FString Name;
-    
-    UPROPERTY()
-    int32 Score;
-    
-    UPROPERTY()
-    float PlayTime;
-};
-
-// 📥 Set struct
-FPlayerData PlayerData;
-PlayerData.Name = "John";
-PlayerData.Score = 100;
-PlayerData.PlayTime = 120.5f;
-
-Cache->SetStruct("Player1", FPlayerData::StaticStruct(), &PlayerData, 300.0f);
-
-// 📤 Get struct
-FPlayerData RetrievedData;
-if (Cache->GetStruct("Player1", FPlayerData::StaticStruct(), &RetrievedData))
-{
-    // Use retrieved data 🎯
-}
-```
-
-### 🎯 Supported Types
-
-| Type Category | Supported Types |
-|--------------|-----------------|
-| 🔢 **Primitive** | bool, uint8, int32, int64, float, double |
-| 📝 **String** | FString, FName, FText |
-| 📦 **Container** | TArray, TMap, TSet |
-| 🏗️ **Struct** | Any USTRUCT (including Blueprint structs) |
-| 🎭 **Object** | UObject* (soft references recommended) |
+- 🚀 **High Performance**: Read-write lock separation achieving 660K+ ops/sec
+- 🔒 **Thread-Safe**: Built with FRWLock for optimal concurrent access
+- 🎨 **Blueprint First**: Complete Blueprint node library for all operations
+- 🎯 **Type Safety**: Support for all UE types - primitives, structs, vectors, colors, etc.
+- ⏰ **Auto Expiration**: TTL-based cache with automatic cleanup
+- 📦 **Collections**: Organize cache data by collection names
 
 ## 🏗️ Architecture
 
-### 🌐 Game Instance Subsystem
+Hippocache is designed with a clean separation of concerns:
 
-Hippocache is implemented as a Game Instance Subsystem, providing:
-- ♻️ Automatic lifecycle management
-- 🌍 Global accessibility
-- 💾 Persistence across level transitions
+- **🌐 Game Instance Subsystem**: Core storage engine with thread-safe operations
+- **🎨 Blueprint Library**: User-friendly API for Blueprint and C++
+- **📦 Collections**: Organize cached data by logical groups
 
-### 🔒 Thread Safety
+The subsystem provides low-level struct storage while the Blueprint Library offers convenient typed access for all Unreal Engine types.
 
-The plugin uses Unreal Engine's `FRWLock` for optimal performance:
-- 👥 Multiple concurrent read operations
-- 🔐 Exclusive write operations
-- ⚡ Minimal lock contention
+## 🎮 Blueprint Usage
 
-### 💾 Memory Management
+### 📥 Setting Values
 
-- 🔄 Automatic cleanup of expired entries
-- 📊 Efficient memory usage with FVariant storage
-- 🛡️ No memory leaks with proper RAII patterns
+Hippocache provides specific nodes for each data type:
 
-## 📚 API Reference
+<table>
+<tr>
+<th>Node</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+<tr>
+<td><b>Set Int32</b></td>
+<td>Cache integer values</td>
+<td>
 
-### 🎨 Blueprint Functions
+```
+Collection: "Player"
+Key: "Score"
+Value: 100
+TTL: 300.0
+```
 
-<details>
-<summary>Click to expand API reference</summary>
+</td>
+</tr>
+<tr>
+<td><b>Set String</b></td>
+<td>Cache text values</td>
+<td>
 
-| Function | Description | Parameters |
-|----------|-------------|------------|
-| `SetInt32` | Cache an integer value | Key, Value, TTL |
-| `GetInt32` | Retrieve an integer value | Key, Out Value |
-| `SetString` | Cache a string value | Key, Value, TTL |
-| `GetString` | Retrieve a string value | Key, Out Value |
-| `SetBool` | Cache a boolean value | Key, Value, TTL |
-| `GetBool` | Retrieve a boolean value | Key, Out Value |
-| `SetFloat` | Cache a float value | Key, Value, TTL |
-| `GetFloat` | Retrieve a float value | Key, Out Value |
-| `SetStruct` | Cache a struct value | Key, Struct, Value, TTL |
-| `GetStruct` | Retrieve a struct value | Key, Struct, Out Value |
-| `HasKey` | Check if a key exists | Key |
-| `Remove` | Remove a specific key | Key |
-| `Clear` | Clear all cached values | - |
+```
+Collection: "Player"
+Key: "Name"
+Value: "John"
+TTL: 600.0
+```
 
-</details>
+</td>
+</tr>
+<tr>
+<td><b>Set Vector</b></td>
+<td>Cache 3D positions</td>
+<td>
 
-### ⏰ TTL (Time To Live)
+```
+Collection: "Player"
+Key: "Position"
+Value: (X:100, Y:200, Z:50)
+TTL: 60.0
+```
 
-- ⏱️ **Default TTL**: 300 seconds (5 minutes)
-- ♾️ **No expiration**: Set to 0
-- 🚫 **Expired entries**: Not returned by Get operations
-- 🧹 **Cleanup**: Happens during write operations
+</td>
+</tr>
+<tr>
+<td><b>Set Transform</b></td>
+<td>Cache full transforms</td>
+<td>
 
-## 💡 Best Practices
+```
+Collection: "Checkpoint"
+Key: "Spawn"
+Value: Transform
+TTL: 0.0 (no expiry)
+```
 
-1. 🏷️ **Key Naming**: Use descriptive, hierarchical keys
-   ```
-   ✅ "Player.Stats.Score"
-   ✅ "UI.Settings.Volume"
-   ❌ "data1"
-   ```
+</td>
+</tr>
+</table>
 
-2. ⏰ **TTL Values**: Set appropriate TTL based on data volatility
-   - 🏃 Short-lived data: 30-60 seconds
-   - 📊 Session data: 5-30 minutes
-   - 💾 Persistent data: 1+ hours
+### 📤 Getting Values
 
-3. 📦 **Struct Usage**: Prefer small, simple structs for better performance
+Retrieve cached values with type-specific nodes:
 
-4. 🔒 **Thread Safety**: No need for external synchronization
+<table>
+<tr>
+<th>Node</th>
+<th>Outputs</th>
+<th>Usage</th>
+</tr>
+<tr>
+<td><b>Get Int32</b></td>
+<td>
+• Result (Success/Fail)<br>
+• Value (Integer)
+</td>
+<td>
 
-5. 💾 **Memory**: Monitor cache size for memory-sensitive applications
+```
+Collection: "Player"
+Key: "Score"
+→ Branch on Result
+  → Use Value
+```
 
-## 📖 Examples
+</td>
+</tr>
+<tr>
+<td><b>Get Vector</b></td>
+<td>
+• Result (Success/Fail)<br>
+• Value (Vector)
+</td>
+<td>
 
-### 🎮 Player Statistics Cache
+```
+Collection: "Player"  
+Key: "Position"
+→ Set Actor Location
+```
+
+</td>
+</tr>
+</table>
+
+### 🎯 Blueprint Node Reference
+
+#### 📊 Primitive Types
+- `Set/Get Int32` - 32-bit integers
+- `Set/Get Int64` - 64-bit integers  
+- `Set/Get Float` - Single precision
+- `Set/Get Double` - Double precision
+- `Set/Get Bool` - Boolean values
+- `Set/Get Byte` - Byte values
+
+#### 📝 Text Types
+- `Set/Get String` - Text strings
+- `Set/Get Name` - FName values
+- `Set/Get Text` - Localized text
+
+#### 📐 Math Types
+- `Set/Get Vector` - 3D vectors
+- `Set/Get Vector2D` - 2D vectors
+- `Set/Get Vector4` - 4D vectors
+- `Set/Get Rotator` - Rotations
+- `Set/Get Transform` - Full transforms
+
+#### 🎨 Visual Types
+- `Set/Get Color` - RGBA colors
+- `Set/Get LinearColor` - Linear colors
+
+#### 📅 Time Types
+- `Set/Get DateTime` - Date and time
+
+#### 🏗️ Custom Types
+- `Set/Get Struct` - Any USTRUCT
+
+### 📦 Collections
+
+Use collections to organize your cached data:
+
+```
+🎮 Game State
+├─ "Player" → Score, Health, Name
+├─ "UI" → Settings, Preferences
+└─ "Session" → ID, StartTime, Players
+
+🌍 World State
+├─ "Enemies" → Positions, States
+├─ "Items" → Locations, Types
+└─ "Checkpoints" → Transforms
+```
+
+## 💻 C++ Usage
+
+### 🔧 Basic Setup
 
 ```cpp
-// 📊 Cache player stats for 10 minutes
-Cache->SetInt32("Player.Score", PlayerScore, 600.0f);
-Cache->SetFloat("Player.Health", PlayerHealth, 600.0f);
-Cache->SetString("Player.Name", PlayerName, 600.0f);
+#include "HippocacheBlueprintLibrary.h"
 
-// 📖 Retrieve all stats
-int32 Score;
-float Health;
-FString Name;
+// All operations go through the Blueprint Library
+using Cache = UHippocacheBlueprintLibrary;
+```
 
-if (Cache->GetInt32("Player.Score", Score) &&
-    Cache->GetFloat("Player.Health", Health) &&
-    Cache->GetString("Player.Name", Name))
+### 📥 Setting Values
+
+```cpp
+// Set with TTL (Time To Live)
+FHippocacheResult Result = Cache::SetInt32WithTTL(
+    WorldContext, 
+    "Player",      // Collection
+    "Score",       // Key
+    1000,          // Value
+    300.0f         // TTL in seconds
+);
+
+if (Result)  // Uses bool operator
 {
-    // All stats retrieved successfully ✅
+    // Success!
+}
+
+// Set without TTL (permanent until removed)
+Cache::SetString(WorldContext, "Player", "Name", "Alice");
+Cache::SetVector(WorldContext, "Player", "Position", FVector(100, 200, 0));
+Cache::SetBool(WorldContext, "Game", "IsPaused", false);
+```
+
+### 📤 Getting Values
+
+```cpp
+// Get with result checking
+int32 Score;
+if (Cache::GetInt32(WorldContext, "Player", "Score", Score))
+{
+    UE_LOG(LogTemp, Log, TEXT("Player Score: %d"), Score);
+}
+
+// Get multiple values
+FString PlayerName;
+FVector Position;
+bool bIsPaused;
+
+if (Cache::GetString(WorldContext, "Player", "Name", PlayerName) &&
+    Cache::GetVector(WorldContext, "Player", "Position", Position) &&
+    Cache::GetBool(WorldContext, "Game", "IsPaused", bIsPaused))
+{
+    // All values retrieved successfully
 }
 ```
 
-### 🌐 Session Data Cache
+### 🏗️ Struct Support
 
 ```cpp
-USTRUCT()
-struct FSessionData
+// Define your struct
+USTRUCT(BlueprintType)
+struct FGameSession
 {
     GENERATED_BODY()
     
@@ -309,16 +270,176 @@ struct FSessionData
     FString SessionId;
     
     UPROPERTY()
+    int32 PlayerCount;
+    
+    UPROPERTY()
     FDateTime StartTime;
     
     UPROPERTY()
-    TArray<FString> ConnectedPlayers;
+    TArray<FString> PlayerNames;
 };
 
-// 💾 Cache session data for 1 hour
-FSessionData Session;
-// ... populate session data
-Cache->SetStruct("CurrentSession", FSessionData::StaticStruct(), &Session, 3600.0f);
+// Set struct
+FGameSession Session;
+Session.SessionId = "GAME-12345";
+Session.PlayerCount = 4;
+Session.StartTime = FDateTime::Now();
+Session.PlayerNames = {"Alice", "Bob", "Charlie", "Diana"};
+
+Cache::SetStructWithTTL(
+    WorldContext,
+    "Game",                          // Collection
+    "CurrentSession",                // Key
+    FGameSession::StaticStruct(),    // Struct type
+    &Session,                        // Data
+    3600.0f                         // 1 hour TTL
+);
+
+// Get struct
+FGameSession RetrievedSession;
+if (Cache::GetStruct(
+    WorldContext,
+    "Game",
+    "CurrentSession",
+    FGameSession::StaticStruct(),
+    &RetrievedSession))
+{
+    // Use retrieved session data
+}
+```
+
+### 🔨 Utility Operations
+
+```cpp
+// Check if key exists
+bool bExists;
+if (Cache::HasKey(WorldContext, "Player", "Score", bExists) && bExists)
+{
+    // Key exists in cache
+}
+
+// Remove specific key
+Cache::Remove(WorldContext, "Player", "Score");
+
+// Clear entire collection
+Cache::Clear(WorldContext, "Player");
+
+// Get collection size
+int32 ItemCount;
+if (Cache::Num(WorldContext, "Player", ItemCount))
+{
+    UE_LOG(LogTemp, Log, TEXT("Player collection has %d items"), ItemCount);
+}
+```
+
+## 📊 Performance Benchmarks
+
+<table align="center">
+<tr>
+<th>Operation</th>
+<th>Ops/Second</th>
+<th>Response Time</th>
+</tr>
+<tr>
+<td>🔵 Set Operations</td>
+<td><b>290K - 395K</b></td>
+<td>2-3μs</td>
+</tr>
+<tr>
+<td>🟢 Get Operations</td>
+<td><b>660K - 671K</b></td>
+<td>1μs</td>
+</tr>
+</table>
+
+## ⏰ TTL (Time To Live)
+
+Control how long data stays in cache:
+
+| TTL Value | Behavior | Use Case |
+|-----------|----------|----------|
+| `0.0` | Never expires | Permanent game settings |
+| `30.0` | 30 seconds | Temporary UI state |
+| `300.0` | 5 minutes | Player session data |
+| `3600.0` | 1 hour | Level cache |
+
+## 💡 Best Practices
+
+### 🏷️ Collection Naming
+
+```cpp
+✅ Good:
+"Player.Stats"     // Hierarchical
+"UI.Settings"      // Clear purpose
+"Session.Data"     // Organized
+
+❌ Avoid:
+"data"            // Too generic
+"temp123"         // Unclear
+""                // Empty
+```
+
+### 🔑 Key Naming
+
+```cpp
+✅ Good:
+"PlayerScore"      // Clear and concise
+"LastCheckpoint"   // Descriptive
+"AudioVolume"      // Specific
+
+❌ Avoid:
+"x"               // Too short
+"var_1"           // Non-descriptive
+```
+
+### 💾 Memory Management
+
+1. **Set appropriate TTLs** - Don't cache forever unless needed
+2. **Clear collections** - Clean up when done
+3. **Monitor size** - Use `Num()` to track items
+4. **Batch operations** - Group related cache operations
+
+## 🎯 Common Use Cases
+
+### 🎮 Game Session Management
+
+```cpp
+// Blueprint: Begin Play
+Set String: Collection="Session", Key="ID", Value=GenerateSessionID()
+Set DateTime: Collection="Session", Key="StartTime", Value=Now()
+Set Int32: Collection="Session", Key="PlayerCount", Value=0
+
+// Blueprint: Player Joined
+Get Int32: Collection="Session", Key="PlayerCount" → Count
+Set Int32: Collection="Session", Key="PlayerCount", Value=Count+1
+```
+
+### 🎨 UI State Persistence
+
+```cpp
+// Blueprint: Save UI Settings
+Set Float: Collection="UI", Key="MasterVolume", Value=Slider.Value
+Set Bool: Collection="UI", Key="ShowHints", Value=Checkbox.Checked
+Set LinearColor: Collection="UI", Key="CrosshairColor", Value=ColorPicker.Color
+
+// Blueprint: Load UI Settings
+Get Float: Collection="UI", Key="MasterVolume" → Set Slider
+Get Bool: Collection="UI", Key="ShowHints" → Set Checkbox
+Get LinearColor: Collection="UI", Key="CrosshairColor" → Set Color
+```
+
+### 🌍 World State Caching
+
+```cpp
+// Blueprint: Save Checkpoint
+Set Transform: Collection="Checkpoint", Key="Player", Value=GetActorTransform()
+Set Float: Collection="Checkpoint", Key="Health", Value=CurrentHealth
+Set Int32: Collection="Checkpoint", Key="Ammo", Value=CurrentAmmo
+
+// Blueprint: Load Checkpoint
+Get Transform: Collection="Checkpoint", Key="Player" → SetActorTransform
+Get Float: Collection="Checkpoint", Key="Health" → Set Health
+Get Int32: Collection="Checkpoint", Key="Ammo" → Set Ammo
 ```
 
 ## 🔧 Troubleshooting
@@ -327,20 +448,12 @@ Cache->SetStruct("CurrentSession", FSessionData::StaticStruct(), &Session, 3600.
 
 | Issue | Solution |
 |-------|----------|
-| 🔍 **Key Not Found** | Check TTL hasn't expired |
-| 🔀 **Type Mismatch** | Use same type for Set/Get |
-| 📦 **Struct Issues** | Ensure USTRUCT() decoration |
-
-### 🚀 Performance Tips
-
-1. 📦 Batch related operations when possible
-2. ⏱️ Use appropriate TTL values
-3. 📏 Consider struct size for complex data
-4. 📊 Profile your specific use case
+| 🔍 **Result = False** | Check collection/key names and TTL expiration |
+| 🔀 **Wrong value returned** | Ensure using matching Get/Set node types |
+| 💾 **Memory growth** | Set appropriate TTLs, clear old collections |
+| 🐛 **Crash on struct** | Verify struct has USTRUCT() macro |
 
 ## 🤝 Contributing
-
-Contributions are welcome! Please:
 
 1. 🍴 Fork the repository
 2. 🌿 Create a feature branch
@@ -355,11 +468,11 @@ This plugin is provided under the MIT License. See [LICENSE](LICENSE) file for d
 ## 📈 Version History
 
 ### 🎉 v1.0.0 (Current)
-- ✨ Initial release with full Blueprint support
+- ✨ Full Blueprint node library for all UE types
 - 🔒 Thread-safe operations with FRWLock
-- 📊 High-performance caching system
-- 🎨 Wildcard Blueprint nodes (Hippoo/Hippop)
-- 📦 Support for all UE types including USTRUCT
+- 📊 High-performance caching (660K+ reads/sec)
+- 📦 Collection-based organization
+- ⏰ Automatic TTL expiration
 
 ---
 
