@@ -84,6 +84,9 @@ struct HIPPOCACHE_API FHippocacheResult
 
 	/** Checks if the item was expired */
 	bool IsExpired() const { return ErrorCode == EHippocacheErrorCode::ItemExpired; }
+
+	/** Bool conversion operator for convenient if checks */
+	explicit operator bool() const { return IsSuccess(); }
 };
 
 /**
@@ -130,4 +133,7 @@ struct THippocacheResult
 	bool IsError() const { return Result.IsError(); }
 	bool IsNotFound() const { return Result.IsNotFound(); }
 	bool IsExpired() const { return Result.IsExpired(); }
+
+	/** Bool conversion operator for convenient if checks */
+	explicit operator bool() const { return IsSuccess(); }
 };
