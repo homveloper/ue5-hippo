@@ -18,6 +18,12 @@
   <b>⚡ Lightning-fast, thread-safe <em>key-value cache storage</em> with magical wildcard nodes for Unreal Engine</b>
 </p>
 
+## 🧠 Why "Hippo"?
+
+The name **Hippocache** comes from the **hippocampus** - the brain region responsible for short-term memory and quick information retrieval. Just like how the hippocampus allows rapid access to recently stored memories, Hippocache provides lightning-fast access to your cached data.
+
+While "hippo" might remind you of the adorable 🦛 hippopotamus, it's actually rooted in neuroscience - making it the perfect metaphor for a memory caching system that never forgets to be fast!
+
 ## 🌟 Introducing Hippoo & Hippop - Universal Cache Nodes
 
 The crown jewels of Hippocache are the **Hippoo** (setter) and **Hippop** (getter) nodes - revolutionary wildcard Blueprint nodes that automatically detect and handle ANY data type!
