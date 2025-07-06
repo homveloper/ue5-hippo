@@ -57,13 +57,7 @@ That's it! 🎉
 
 ### 🦛 Universal Cache Operations
 
-<p align="center">
-  <a href="https://blueprintue.com/render/hyijwgji/" target="_blank">
-    <img src="https://via.placeholder.com/1200x600/1976D2/FFFFFF?text=Click+to+View+Interactive+Blueprint" alt="Hippocache Blueprint Example">
-  </a>
-  <br>
-  <i>Click the image to view interactive Blueprint example</i>
-</p>
+![Hippocache Blueprint Example](https://blueprintue.com/render/hyijwgji/)
 
 #### 🎯 Hippoo - Store ANY Value
 
