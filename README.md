@@ -58,7 +58,7 @@ That's it! 🎉
 ### 🦛 Universal Cache Operations
 
 
-![blueprint](https://github.com/user-attachments/assets/477d7b30-96f8-42c4-85f6-039782b2f7a5)
+![blueprint ](https://github.com/user-attachments/assets/7095e431-1a56-4ec7-a132-ebfddac71c74)
 
 #### 🎯 Hippoo - Store ANY Value
 
