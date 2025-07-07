@@ -3,7 +3,15 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "HAL/CriticalSection.h"
+#include "Runtime/Launch/Resources/Version.h"
+
+// Version-specific includes for StructUtils
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 4
 #include "StructUtils/InstancedStruct.h"
+#else
+#include "InstancedStruct.h"
+#endif
+
 #include "HippocacheResult.h"
 #include "HippocacheVariantWrapper.h"
 #include "HippocacheSubsystem.generated.h"
@@ -187,9 +195,15 @@ public:
 	template<typename T>
 	FHippocacheResult SetStructWithTTL(FName Collection, const FString& Key, const T& Value, FTimespan TTL)
 	{
-		// No static_assert needed - FInstancedStruct::Make will handle the type checking
 		FInstancedStruct InstancedStruct = FInstancedStruct::Make<T>(Value);
 		return SetStructWithTTL(Collection, Key, InstancedStruct, TTL);
+	}
+
+	// Template specialization for FInstancedStruct to avoid recursive wrapping
+	template<>
+	FHippocacheResult SetStructWithTTL<FInstancedStruct>(FName Collection, const FString& Key, const FInstancedStruct& Value, FTimespan TTL)
+	{
+		return SetStructWithTTL(Collection, Key, Value, TTL);
 	}
 
 	template<typename T>
@@ -201,7 +215,7 @@ public:
 	template<typename T>
 	THippocacheResult<T> GetStructTyped(FName Collection, const FString& Key)
 	{
-		// No static_assert needed - T::StaticStruct() will fail at compile time if T is not a USTRUCT
+		static_assert(!std::is_same_v<T, FInstancedStruct>, "Use GetStruct() instead of GetStructTyped<FInstancedStruct>");
 		FInstancedStruct OutValue;
 		auto Result = GetStruct(Collection, Key, OutValue);
 		

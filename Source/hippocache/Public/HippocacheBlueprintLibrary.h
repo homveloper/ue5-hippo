@@ -37,6 +37,21 @@ public:
 		return Subsystem->SetStructWithTTL<T>(Collection, Key, Value, TTL);
 	}
 
+	// Template specialization for FInstancedStruct to avoid recursive wrapping
+	template<>
+	FHippocacheResult SetStructWithTTL<FInstancedStruct>(const UObject* WorldContextObject, FName Collection, const FString& Key, const FInstancedStruct& Value, float TTLSeconds)
+	{
+		UHippocacheSubsystem* Subsystem = nullptr;
+		FHippocacheResult Result = GetSubsystemSafe(WorldContextObject, Subsystem);
+		if (Result.IsError())
+		{
+			return Result;
+		}
+
+		FTimespan TTL = FTimespan::FromSeconds(TTLSeconds);
+		return Subsystem->SetStructWithTTL(Collection, Key, Value, TTL);
+	}
+
 	template<typename T>
 	static FHippocacheResult SetStruct(const UObject* WorldContextObject, FName Collection, const FString& Key, const T& Value)
 	{
@@ -61,6 +76,27 @@ public:
 		}
 
 		return Subsystem->GetStructTyped<T>(Collection, Key);
+	}
+
+	// Template specialization for FInstancedStruct to avoid static_assert
+	template<>
+	THippocacheResult<FInstancedStruct> GetStruct<FInstancedStruct>(const UObject* WorldContextObject, FName Collection, const FString& Key)
+	{
+		UHippocacheSubsystem* Subsystem = nullptr;
+		FHippocacheResult Result = GetSubsystemSafe(WorldContextObject, Subsystem);
+		if (Result.IsError())
+		{
+			return THippocacheResult<FInstancedStruct>::Error(Result.ErrorCode, Result.ErrorMessage, Result.ErrorContext);
+		}
+
+		FInstancedStruct OutValue;
+		Result = Subsystem->GetStruct(Collection, Key, OutValue);
+		if (Result.IsError())
+		{
+			return THippocacheResult<FInstancedStruct>::Error(Result.ErrorCode, Result.ErrorMessage, Result.ErrorContext);
+		}
+
+		return THippocacheResult<FInstancedStruct>::Success(OutValue);
 	}
 
 	// C++ only template functions for primitive type access via FVariant

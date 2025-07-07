@@ -2,6 +2,7 @@
 #include "Misc/Variant.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 FVariantWrapper::FVariantWrapper()
     : VariantType(static_cast<int32>(EVariantTypes::Empty))
@@ -151,9 +152,11 @@ template FVariantWrapper::FVariantWrapper(const FPlane& InValue);
 
 // Geometry types
 template FVariantWrapper::FVariantWrapper(const FBox& InValue);
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 4
 template FVariantWrapper::FVariantWrapper(const FIntRect& InValue);
 template FVariantWrapper::FVariantWrapper(const FIntPoint& InValue);
 template FVariantWrapper::FVariantWrapper(const FIntVector& InValue);
+#endif
 
 // Color types
 template FVariantWrapper::FVariantWrapper(const FColor& InValue);
@@ -189,9 +192,11 @@ template FTransform FVariantWrapper::GetValue<FTransform>() const;
 template FMatrix FVariantWrapper::GetValue<FMatrix>() const;
 template FPlane FVariantWrapper::GetValue<FPlane>() const;
 template FBox FVariantWrapper::GetValue<FBox>() const;
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 4
 template FIntRect FVariantWrapper::GetValue<FIntRect>() const;
 template FIntPoint FVariantWrapper::GetValue<FIntPoint>() const;
 template FIntVector FVariantWrapper::GetValue<FIntVector>() const;
+#endif
 template FColor FVariantWrapper::GetValue<FColor>() const;
 template FLinearColor FVariantWrapper::GetValue<FLinearColor>() const;
 template FGuid FVariantWrapper::GetValue<FGuid>() const;
@@ -223,9 +228,11 @@ template bool FVariantWrapper::IsType<FTransform>() const;
 template bool FVariantWrapper::IsType<FMatrix>() const;
 template bool FVariantWrapper::IsType<FPlane>() const;
 template bool FVariantWrapper::IsType<FBox>() const;
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 4
 template bool FVariantWrapper::IsType<FIntRect>() const;
 template bool FVariantWrapper::IsType<FIntPoint>() const;
 template bool FVariantWrapper::IsType<FIntVector>() const;
+#endif
 template bool FVariantWrapper::IsType<FColor>() const;
 template bool FVariantWrapper::IsType<FLinearColor>() const;
 template bool FVariantWrapper::IsType<FGuid>() const;
