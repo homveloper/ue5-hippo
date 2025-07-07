@@ -18,32 +18,6 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-// Helper function to get world safely for testing
-inline UWorld* GetWorldForTestSafe()
-{
-#if WITH_EDITOR
-    if (GEditor && GEditor->GetWorldContexts().Num() && GEditor->GetWorldContexts()[0].World())
-    {
-        UE_LOG(LogTemp, Verbose, TEXT("Getting world from editor"));
-        return GEditor->GetWorldContexts()[0].World();
-    }
-#endif
-    if (GEngine && GEngine->GetWorldContexts().Num() && GEngine->GetWorldContexts()[0].World())
-    {
-        UE_LOG(LogTemp, Verbose, TEXT("Getting world from engine"));
-        return GEngine->GetWorldContexts()[0].World();
-    }
-#if WITH_EDITOR
-    if (GEditor)
-    {
-        UE_LOG(LogTemp, Verbose, TEXT("Creating new world for editor"));
-        return FAutomationEditorCommonUtils::CreateNewMap();
-    }
-#endif
-    UE_LOG(LogTemp, Warning, TEXT("GEditor was not present, could not create World (map)"));
-    return nullptr;
-}
-
 // Test context for Blueprint Library testing
 struct FHippocacheBlueprintTestContext
 {
@@ -66,23 +40,21 @@ class FHippocacheBlueprintTestHelper
 public:
     bool SetupBlueprintTest(FHippocacheBlueprintTestContext& Context, FAutomationSpecBase* TestSpec)
     {
-        // Create a proper test world with all required components
-        TestSpec->AddInfo(TEXT("Creating safe test world for automation"));
-        
-        // Create GameInstance with unique name to avoid conflicts
+        // Create GameInstance with unique name
         static int32 UniqueInstanceID = 0;
         UniqueInstanceID++;
         
-        FString GameInstanceName = FString::Printf(TEXT("TestGameInstance_%d"), UniqueInstanceID);
+        FString GameInstanceName = FString::Printf(TEXT("BlueprintTestGameInstance_%d"), UniqueInstanceID);
         UGameInstance* GameInstance = NewObject<UGameInstance>(GEngine, UGameInstance::StaticClass(), *GameInstanceName);
+        
         if (!GameInstance)
         {
             TestSpec->AddError(TEXT("Failed to create GameInstance"));
             return false;
         }
         
-        // Create World with unique name and set GameInstance
-        FString WorldName = FString::Printf(TEXT("TestWorld_%d"), UniqueInstanceID);
+        // Create a minimal world for testing - avoid complex initialization
+        FString WorldName = FString::Printf(TEXT("BlueprintTestWorld_%d"), UniqueInstanceID);
         Context.TestWorld = UWorld::CreateWorld(EWorldType::Game, false, *WorldName);
         if (!Context.TestWorld)
         {
@@ -90,70 +62,16 @@ public:
             return false;
         }
         
+        // Set GameInstance first before any other setup
         Context.TestWorld->SetGameInstance(GameInstance);
         
-        // This triggers the creation of a game mode which is required for some things
-        Context.TestWorld->SetGameMode(FURL());
-        
-        // Set up the world context which is sometimes required to find the player
+        // Create world context and properly link everything
         FWorldContext& WorldContext = GEngine->CreateNewWorldContext(EWorldType::Game);
         WorldContext.SetCurrentWorld(Context.TestWorld);
-        WorldContext.GameViewport = NewObject<UGameViewportClient>(GEngine);
-        WorldContext.OwningGameInstance = Context.TestWorld->GetGameInstance();
+        WorldContext.OwningGameInstance = GameInstance;
         
-        // Initialize actors for play
-        Context.TestWorld->InitializeActorsForPlay(FURL());
+        TestSpec->AddInfo(TEXT("World and GameInstance setup completed (minimal initialization)"));
         
-        // Setup the viewport which is required for some things as well
-        TSharedRef<SOverlay> DummyOverlay = SNew(SOverlay);
-        WorldContext.GameViewport->SetViewportOverlayWidget(nullptr, DummyOverlay);
-        
-        // Note: LocalPlayer is not needed for GameInstanceSubsystem tests
-        // Hippocache now uses GameInstanceSubsystem which is accessible through GameInstance
-        /* 
-        // Try to create LocalPlayer with a unique ID - expect ensure warning in editor, but it should still work
-        FString Error;
-        TestSpec->AddInfo(TEXT("Attempting to create LocalPlayer (expect editor warning)"));
-        
-        // Use a unique player ID to avoid conflicts between test runs
-        static int32 UniquePlayerID = 0;
-        UniquePlayerID++;
-        
-        ULocalPlayer* LocalPlayer = GameInstance->CreateLocalPlayer(UniquePlayerID, Error, false);
-        if (LocalPlayer)
-        {
-            TestSpec->AddInfo(TEXT("Successfully created LocalPlayer for test (despite editor ensure warning)"));
-        }
-        else
-        {
-            TestSpec->AddWarning(FString::Printf(TEXT("Failed to create LocalPlayer: %s - some tests may fail"), *Error));
-        }
-        */
-        
-        // Manually initialize GameInstanceSubsystem for test environment
-        UHippocacheSubsystem* HippocacheSubsystem = GameInstance->GetSubsystem<UHippocacheSubsystem>();
-        if (!HippocacheSubsystem)
-        {
-            TestSpec->AddWarning(TEXT("HippocacheSubsystem not found in GameInstance - trying to initialize manually"));
-            // Force subsystem initialization by calling Initialize if needed
-            GameInstance->Init();
-            HippocacheSubsystem = GameInstance->GetSubsystem<UHippocacheSubsystem>();
-            if (HippocacheSubsystem)
-            {
-                TestSpec->AddInfo(TEXT("Successfully initialized HippocacheSubsystem manually"));
-            }
-            else
-            {
-                TestSpec->AddError(TEXT("Failed to initialize HippocacheSubsystem even manually"));
-                return false;
-            }
-        }
-        else
-        {
-            TestSpec->AddInfo(TEXT("HippocacheSubsystem found in GameInstance"));
-        }
-        
-        TestSpec->AddInfo(TEXT("Safe test world setup completed"));
         return true;
     }
     

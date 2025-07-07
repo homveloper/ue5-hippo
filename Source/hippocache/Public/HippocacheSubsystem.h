@@ -215,7 +215,7 @@ public:
 	template<typename T>
 	THippocacheResult<T> GetStructTyped(FName Collection, const FString& Key)
 	{
-		static_assert(!std::is_same_v<T, FInstancedStruct>, "Use GetStruct() instead of GetStructTyped<FInstancedStruct>");
+		static_assert(!std::is_same_v<T, FInstancedStruct>, "Cannot use FInstancedStruct with GetStructTyped");
 		FInstancedStruct OutValue;
 		auto Result = GetStruct(Collection, Key, OutValue);
 		

@@ -44,10 +44,6 @@ public class Hippocache : ModuleRules
 			}
 		);
 
-		if (Target.bBuildEditor)
-		{
-			PrivateDependencyModuleNames.Add("UnrealEd");
-		}
 
 		// Enable testing
 		if (Target.Configuration != UnrealTargetConfiguration.Shipping)

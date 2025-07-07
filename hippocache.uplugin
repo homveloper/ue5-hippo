@@ -19,11 +19,6 @@
 			"Name": "Hippocache",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "HippocacheEditor",
-			"Type": "UncookedOnly",
-			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

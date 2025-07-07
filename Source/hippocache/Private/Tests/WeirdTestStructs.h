@@ -54,6 +54,45 @@ struct FHugeStruct
 	
 	UPROPERTY()
 	TArray<FTransform> ManyTransforms;
+
+	FHugeStruct()
+	{
+		// Initialize with some data for benchmarking
+		MassiveArray.Reserve(1000);
+		for (int32 i = 0; i < 1000; ++i)
+		{
+			MassiveArray.Add(FMath::RandRange(1, 100000));
+		}
+		
+		// Add some map entries
+		for (int32 i = 0; i < 100; ++i)
+		{
+			HugeMap.Add(FString::Printf(TEXT("Key_%d"), i), FString::Printf(TEXT("Value_%d"), i));
+		}
+		
+		// Create a large string
+		VeryLongString.Reserve(5000);
+		for (int32 i = 0; i < 100; ++i)
+		{
+			VeryLongString += FString::Printf(TEXT("Large string segment %d with data. "), i);
+		}
+		
+		// Add some vectors and transforms
+		LotsOfVectors.Reserve(500);
+		ManyTransforms.Reserve(100);
+		for (int32 i = 0; i < 500; ++i)
+		{
+			LotsOfVectors.Add(FVector(FMath::FRandRange(-1000.0f, 1000.0f), 
+									 FMath::FRandRange(-1000.0f, 1000.0f), 
+									 FMath::FRandRange(-1000.0f, 1000.0f)));
+		}
+		for (int32 i = 0; i < 100; ++i)
+		{
+			ManyTransforms.Add(FTransform(FRotator(FMath::FRandRange(0.0f, 360.0f), 
+												  FMath::FRandRange(0.0f, 360.0f), 
+												  FMath::FRandRange(0.0f, 360.0f))));
+		}
+	}
 	
 	bool operator==(const FHugeStruct& Other) const
 	{
@@ -368,6 +407,36 @@ struct FDataTableRowStruct : public FTableRowBase
 		return ItemName == Other.ItemName && 
 			   ItemValue == Other.ItemValue && 
 			   FMath::IsNearlyEqual(ItemWeight, Other.ItemWeight);
+	}
+};
+
+// Simple test struct for benchmarking
+USTRUCT()
+struct FSimpleTestStruct
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	int32 IntValue = 0;
+	
+	UPROPERTY()
+	float FloatValue = 0.0f;
+	
+	UPROPERTY()
+	FString StringValue;
+	
+	FSimpleTestStruct()
+		: IntValue(42)
+		, FloatValue(3.14f)
+		, StringValue(TEXT("SimpleTest"))
+	{
+	}
+	
+	bool operator==(const FSimpleTestStruct& Other) const
+	{
+		return IntValue == Other.IntValue && 
+			   FMath::IsNearlyEqual(FloatValue, Other.FloatValue) && 
+			   StringValue == Other.StringValue;
 	}
 };
 
